@@ -2321,7 +2321,7 @@ static void handle_cpuid_virtual(struct vcpu_t *vcpu, uint32 a, uint32 c)
     uint32 hw_model;
 
     static uint32 cpu_features_1 =
-            // pat is disabled!
+            FEATURE(PAT)        |
             FEATURE(FPU)        |
             FEATURE(VME)        |
             FEATURE(DE)         |
@@ -3242,6 +3242,21 @@ static int handle_msr_read(struct vcpu_t *vcpu, uint32 msr, uint64 *val)
             r = misc_msr_read(vcpu, msr, val);
             break;
         }
+        case 0x1DD: /* IA32_LASTINTFROMIP */
+            *val = 0x13370001;
+            break;
+        case 0x1DE: /* IA32_LASTINTTOIP */
+            *val = 0x13370002;
+            break;
+        case 0xC001001A: /* MSR_K8_TOP_MEM1 */
+            *val = 0x80000000ULL;
+            break;
+        case 0xC001001D: /* MSR_K8_TOP_MEM2 */
+            *val = 0x280000000ULL;
+            break;
+        case 0xC0011033: /* IbsOpCtl */
+            *val = 0;
+            break;
     }
 
     return r;

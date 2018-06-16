@@ -111,6 +111,12 @@
     <ClCompile>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
+    <PreBuildEvent>
+      <Command>C:\Users\Alex\Desktop\stop-uninstall-haxm.bat</Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>C:\Users\Alex\Desktop\install-haxm.bat</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
