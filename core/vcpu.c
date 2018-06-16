@@ -99,6 +99,7 @@ static int exit_invalid_guest_state(struct vcpu_t *vcpu,
 static int exit_ept_misconfiguration(struct vcpu_t *vcpu,
                                      struct hax_tunnel *htun);
 static int exit_ept_violation(struct vcpu_t *vcpu, struct hax_tunnel *htun);
+static int exit_xsetbv(struct vcpu_t *vcpu, struct hax_tunnel *htun);
 static int null_handler(struct vcpu_t *vcpu, struct hax_tunnel *hun);
 
 static void advance_rip(struct vcpu_t *vcpu);
@@ -384,6 +385,7 @@ static int (*handler_funcs[])(struct vcpu_t *vcpu, struct hax_tunnel *htun) = {
     [VMX_EXIT_FAILED_VMENTER_GS]  = exit_invalid_guest_state,
     [VMX_EXIT_EPT_VIOLATION]      = exit_ept_violation,
     [VMX_EXIT_EPT_MISCONFIG]      = exit_ept_misconfiguration,
+    [VMX_EXIT_XSETBV]             = exit_xsetbv,
 };
 
 static int nr_handlers = ARRAY_ELEMENTS(handler_funcs);
@@ -2363,6 +2365,9 @@ static void handle_cpuid_virtual(struct vcpu_t *vcpu, uint32 a, uint32 c)
     if (cpu_has_feature(X86_FEATURE_AESNI)) {
         cpu_features_2 |= FEATURE(AESNI);
     }
+    if (cpu_has_feature(X86_FEATURE_XSAVE)) {
+        cpu_features_2 |= FEATURE(XSAVE);
+    }
     if (cpu_has_feature(X86_FEATURE_RDTSCP)) {
         cpu_features_ext |= FEATURE(RDTSCP);
     }
@@ -3564,6 +3569,13 @@ static int exit_ept_violation(struct vcpu_t *vcpu, struct hax_tunnel *htun)
 mmio_handler:
 #endif
     return vcpu_emulate_insn(vcpu);
+}
+
+static int exit_xsetbv(struct vcpu_t *vcpu, struct hax_tunnel *htun)
+{
+    hax_warning("exit_xsetbv.\n");
+    advance_rip(vcpu);
+    return HAX_RESUME;
 }
 
 static void handle_mem_fault(struct vcpu_t *vcpu, struct hax_tunnel *htun)
