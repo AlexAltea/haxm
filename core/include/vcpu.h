@@ -211,6 +211,9 @@ struct vcpu_t {
     uint64 cr_pat;
     uint64 cpuid_features_flag_mask;
 
+    /* Debugging */
+    uint32 debug_control;
+
     /* Interrupt stuff */
     uint32 intr_pending[8];
     uint32 nr_pending_intrs;
@@ -250,6 +253,7 @@ int vcpu_get_fpu(struct vcpu_t *vcpu, struct fx_layout *fl);
 int vcpu_put_fpu(struct vcpu_t *vcpu, struct fx_layout *fl);
 int vcpu_get_msr(struct vcpu_t *vcpu, uint64 entry, uint64 *val);
 int vcpu_put_msr(struct vcpu_t *vcpu, uint64 entry, uint64 val);
+void vcpu_debug(struct vcpu_t *vcpu, struct hax_debug_t *debug);
 
 /* The declaration for OS wrapper code */
 int hax_vcpu_destroy_host(struct vcpu_t *cvcpu, void *vcpu_host);

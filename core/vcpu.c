@@ -3784,6 +3784,15 @@ int vcpu_set_msr(struct vcpu_t *vcpu, uint64 entry, uint64 val)
     return handle_msr_write(vcpu, entry, val);
 }
 
+void vcpu_debug(struct vcpu_t *vcpu, struct hax_debug_t *debug)
+{
+    if (debug->control & HAX_DEBUG_ENABLE) {
+        vcpu->debug_control = debug->control;
+    } else {
+        vcpu->debug_control = 0;
+    }
+};
+
 static void vcpu_dump(struct vcpu_t *vcpu, uint32 mask, const char *caption)
 {
     vcpu_vmread_all(vcpu);
