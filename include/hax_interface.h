@@ -143,6 +143,9 @@ struct hax_tunnel {
         struct {
             paddr_t dummy;
         } state;
+        struct {
+            uint64_t rip;
+        } debug;
     };
     uint64_t apic_base;
 } PACKED;
@@ -269,13 +272,14 @@ struct hax_qemu_version {
     uint32_t least_version;
 } PACKED;
 
-#define HAX_DEBUG_ENABLE (1 << 0)
-#define HAX_DEBUG_STEP   (1 << 1)
-#define HAX_DEBUG_SW_BP  (1 << 2)
-#define HAX_DEBUG_HW_BP  (1 << 3)
+#define HAX_DEBUG_ENABLE     (1 << 0)
+#define HAX_DEBUG_STEP       (1 << 1)
+#define HAX_DEBUG_USE_SW_BP  (1 << 2)
+#define HAX_DEBUG_USE_HW_BP  (1 << 3)
 
 struct hax_debug_t {
     uint32_t control;
+    uint64_t dr[8];
 } PACKED;
 
 #endif  // HAX_INTERFACE_H_
