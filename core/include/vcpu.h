@@ -234,10 +234,10 @@ struct vcpu_t {
 
 struct vcpu_t *vcpu_create(struct vm_t *vm, void *vm_host, int vcpu_id);
 int vcpu_execute(struct vcpu_t *vcpu);
+void vcpu_load_guest_state(struct vcpu_t *vcpu);
+void vcpu_save_guest_state(struct vcpu_t *vcpu);
 void vcpu_load_host_state(struct vcpu_t *vcpu);
 void vcpu_save_host_state(struct vcpu_t *vcpu);
-void load_guest_msr(struct vcpu_t *vcpu);
-void save_guest_msr(struct vcpu_t *vcpu);
 
 int vtlb_active(struct vcpu_t *vcpu);
 int vcpu_vmexit_handler(struct vcpu_t *vcpu, exit_reason_t exit_reason,

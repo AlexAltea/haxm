@@ -145,6 +145,8 @@ struct hax_tunnel {
         } state;
         struct {
             uint64_t rip;
+            uint64_t dr6;
+            uint64_t dr7;
         } debug;
     };
     uint64_t apic_base;
