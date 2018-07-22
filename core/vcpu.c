@@ -3874,7 +3874,6 @@ int vcpu_set_msr(struct vcpu_t *vcpu, uint64 entry, uint64 val)
 
 void vcpu_debug(struct vcpu_t *vcpu, struct hax_debug_t *debug)
 {
-    hax_warning("vcpu_debug %X\n", debug->control);
     if (debug->control & HAX_DEBUG_ENABLE) {
         vcpu->debug_control = debug->control;
         // Hardware breakpoints
