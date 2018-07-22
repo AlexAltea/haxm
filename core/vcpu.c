@@ -1155,6 +1155,9 @@ static void vcpu_update_exception_bitmap(struct vcpu_t *vcpu)
     if (vcpu->debug_control & HAX_DEBUG_USE_SW_BP) {
         exc_bitmap |= (1u << VECTOR_BP);
     }
+    hax_warning("vcpu_update_exception_bitmap: #DB:%d #BP:%d",
+        (exc_bitmap & (1u << VECTOR_DB)) ? 1 : 0,
+        (exc_bitmap & (1u << VECTOR_BP)) ? 1 : 0);
     vmwrite(vcpu, VMX_EXCEPTION_BITMAP, exc_bitmap);
 }
 
@@ -2850,7 +2853,7 @@ static int exit_dr_access(struct vcpu_t *vcpu, struct hax_tunnel *htun)
 {
     uint64 *dr;
     struct vcpu_state_t *state = vcpu->state;
-
+#if 0
     htun->_exit_reason = vmx(vcpu, exit_reason).basic_reason;
 
     // Generally detect
@@ -2911,7 +2914,7 @@ static int exit_dr_access(struct vcpu_t *vcpu, struct hax_tunnel *htun)
         // MOV DR <- GPR
         *dr = state->_regs[vmx(vcpu, exit_qualification).dr.gpr];
     }
-
+#endif
     advance_rip(vcpu);
     return HAX_RESUME;
 }
@@ -3874,6 +3877,7 @@ int vcpu_set_msr(struct vcpu_t *vcpu, uint64 entry, uint64 val)
 
 void vcpu_debug(struct vcpu_t *vcpu, struct hax_debug_t *debug)
 {
+    hax_warning("vcpu_debug: %X\n", debug->control);
     if (debug->control & HAX_DEBUG_ENABLE) {
         vcpu->debug_control = debug->control;
         // Hardware breakpoints
@@ -3890,10 +3894,15 @@ void vcpu_debug(struct vcpu_t *vcpu, struct hax_debug_t *debug)
         if (debug->control & HAX_DEBUG_STEP) {
             vmwrite(vcpu, GUEST_RFLAGS,
                 vmread(vcpu, GUEST_RFLAGS) | (1 << 8) /* TF */);
+        } else {
+            vmwrite(vcpu, GUEST_RFLAGS,
+                vmread(vcpu, GUEST_RFLAGS) & ~(1 << 8) /* TF */);
         }
     } else {
         vcpu->debug_control = 0;
         vmwrite(vcpu, GUEST_DR7, 0);
+        vmwrite(vcpu, GUEST_RFLAGS,
+            vmread(vcpu, GUEST_RFLAGS) & ~(1 << 8) /* TF */);
     }
     vcpu_update_exception_bitmap(vcpu);
 };
