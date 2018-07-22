@@ -1149,7 +1149,7 @@ static void vcpu_update_exception_bitmap(struct vcpu_t *vcpu)
     uint32 exc_bitmap;
 
     exc_bitmap = (1u << VECTOR_MC) | (1u << VECTOR_NM);
-    if (vcpu->debug_control & HAX_DEBUG_USE_HW_BP) {
+    if (vcpu->debug_control & (HAX_DEBUG_USE_HW_BP | HAX_DEBUG_STEP)) {
         exc_bitmap |= (1u << VECTOR_DB);
     }
     if (vcpu->debug_control & HAX_DEBUG_USE_SW_BP) {
@@ -3883,7 +3883,6 @@ void vcpu_debug(struct vcpu_t *vcpu, struct hax_debug_t *debug)
             vcpu->state->_dr1 = debug->dr[1];
             vcpu->state->_dr2 = debug->dr[2];
             vcpu->state->_dr3 = debug->dr[3];
-            vcpu->state->_dr6 = debug->dr[6];
             vmwrite(vcpu, GUEST_DR7, debug->dr[7]);
         } else {
             vmwrite(vcpu, GUEST_DR7, 0);
